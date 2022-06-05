@@ -44,7 +44,6 @@
                         <div class="invalid-feedback" id="valid-password"></div>
                     </div>
                 </form>
-
             </div>
             <div class="modal-footer no-bd">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">
@@ -64,7 +63,7 @@
     <div class="main-content">
         <section class="section">
             <div class="section-header">
-                <h1>Data Karyawan</h1>
+                <h1>Data Customer</h1>
                 <div class="section-header-breadcrumb">
                     <div class="breadcrumb-item">
                         <a href="{{ route('admin.dashboard') }}">
@@ -74,7 +73,7 @@
                     </div>
                     <div class="breadcrumb-item">
                         <i class="fas fa-user"></i>
-                        Data Karyawan
+                        Data Customer
                     </div>
                 </div>
             </div>
@@ -92,12 +91,32 @@
                                 <thead class="thead-light">
                                     <tr>
                                         <th>No</th>
-                                        <th>NIP</th>
-                                        <th>Name</th>
-                                        <th>Email</th>
+                                        <th>Nama</th>
+                                        <th>Alamat</th>
+                                        <th>No. Handphone</th>
+                                        <th>Tanggal Beli</th>
                                         <th>Aksi</th>
                                     </tr>
                                 </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1.</td>
+                                        <td>Renny</td>
+                                        <td>Jawa Barat</td>
+                                        <td>087264574836</td>
+                                        <td>01 April 2022</td>
+                                        <td>
+                                            <div class="form-button-action">
+                                                <button id="btn-edit" class="btn btn-sm btn-icon btn-warning" data-original-title="Edit">
+                                                    <i class="fa fa-edit"></i>
+                                                </button>
+                                                <button id="btn-delete" class="btn btn-sm btn-icon btn-danger" data-original-title="Delete">
+                                                    <i class="fa fa-trash-alt"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
                             </table>
                         </div>
                     </div>
@@ -111,270 +130,4 @@
     <script src="{{ asset('backend/modules/datatables/datatables.min.js') }}"></script>
     <script src="{{ asset('backend/modules/sweetalert/sweetalert.min.js') }}"></script>
 
-    <script>
-        $(document).ready(function() {
-            // Setup AJAX CSRF
-            $.ajaxSetup({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                }
-            });
-
-            // Initializing DataTable
-            $('#user-table').DataTable({
-                processing: true,
-                serverSide: true,
-                ajax: '{{ route('admin.user.index') }}',
-                columns: [
-                    {
-                        data: 'DT_RowIndex',
-                        name: 'DT_RowIndex',
-                        orderable: false,
-                        searchable: false
-                    },
-                    {
-                        data: 'nip',
-                        name: 'nip'
-                    },
-                    {
-                        data: 'name',
-                        name: 'name'
-                    },
-                    {
-                        data: 'email',
-                        name: 'email'
-                    },
-                    {
-                        data: 'action',
-                        name: 'action',
-                        className: 'text-center',
-                        orderable: false,
-                        searchable: false
-                    }
-                ],
-            });
-
-            $('#user-table').DataTable().on('draw', function() {
-                $('[data-toggle="tooltip"]').tooltip();
-            });
-
-            // Open Modal to Add new Category
-            $('#btn-add').click(function() {
-                $('#formModal').modal('show');
-                $('.modal-title').html('Tambah Data');
-                $('#company-form').trigger('reset');
-                $('#btn-save').html('<i class="fas fa-check"></i> Simpan');
-                $('#company-form').find('.form-control').removeClass('is-invalid is-valid');
-                $('#btn-save').val('save').removeAttr('disabled');
-            });
-
-            // Store new company or update company
-            $('#btn-save').click(function() {
-                var formData = {
-                    nip: $('#nip').val(),
-                    name: $('#name').val(),
-                    email: $('#email').val(),
-                    password: $('#password').val(),
-                };
-
-                var state = $('#btn-save').val();
-                var type = "POST";
-                var ajaxurl = '{{ route('admin.user.store') }}';
-                $('#btn-save').html('<i class="fas fa-cog fa-spin"></i> Saving...').attr("disabled", true);
-
-                if (state == "update") {
-                    $('#btn-save').html('<i class="fas fa-cog fa-spin"></i> Updating...').attr("disabled", true);
-                    var id = $('#id').val();
-                    type = "PUT";
-                    ajaxurl = '{{ route('admin.user.store') }}' + '/' + id;
-                }
-
-                $.ajax({
-                    type: type,
-                    url: ajaxurl,
-                    data: formData,
-                    dataType: 'json',
-                    success: function(data) {
-                        if (state == "save") {
-                            swal({
-                                title: "Berhasil!",
-                                text: "Data berhasil ditambahkan",
-                                icon: "success",
-                                timer: 3000
-                            });
-
-                            $('#user-table').DataTable().draw(false);
-                            $('#user-table').DataTable().on('draw', function() {
-                                $('[data-toggle="tooltip"]').tooltip();
-                            });
-                        } else {
-                            swal({
-                                title: "Berhasil!",
-                                text: "Data berhasil di ubah",
-                                icon: "success",
-                                timer: 3000
-                            });
-
-                            $('#user-table').DataTable().draw(false);
-                            $('#user-table').DataTable().on('draw', function() {
-                                $('[data-toggle="tooltip"]').tooltip();
-                            });
-                        }
-
-                        $('#formModal').modal('hide');
-                    },
-                    error: function(data) {
-                        try {
-                            if (state == "save") {
-                                if (data.responseJSON.errors.name) {
-                                    $('#name').removeClass('is-valid').addClass('is-invalid');
-                                    $('#valid-name').removeClass('valid-feedback').addClass('invalid-feedback');
-                                    $('#valid-name').html(data.responseJSON.errors.name);
-                                }
-                                if (data.responseJSON.errors.email) {
-                                    $('#email').removeClass('is-valid').addClass('is-invalid');
-                                    $('#valid-email').removeClass('valid-feedback').addClass('invalid-feedback');
-                                    $('#valid-email').html(data.responseJSON.errors.email);
-                                }
-                                if (data.responseJSON.errors.kabupaten) {
-                                    $('#kabupaten').removeClass('is-valid').addClass('is-invalid');
-                                    $('#valid-kabupaten').removeClass('valid-feedback').addClass('invalid-feedback');
-                                    $('#valid-kabupaten').html(data.responseJSON.errors.kabupaten);
-                                }
-                                if (data.responseJSON.errors.password) {
-                                    $('#password').removeClass('is-valid').addClass('is-invalid');
-                                    $('#valid-password').removeClass('valid-feedback').addClass('invalid-feedback');
-                                    $('#valid-password').html(data.responseJSON.errors.password);
-                                }
-
-                                $('#btn-save').html('<i class="fas fa-check"></i> Save Changes');
-                                $('#btn-save').removeAttr('disabled');
-                            } else {
-                                if (data.responseJSON.errors.name) {
-                                    $('#name').removeClass('is-valid').addClass('is-invalid');
-                                    $('#valid-name').removeClass('valid-feedback').addClass('invalid-feedback');
-                                    $('#valid-name').html(data.responseJSON.errors.name);
-                                }
-                                if (data.responseJSON.errors.email) {
-                                    $('#email').removeClass('is-valid').addClass('is-invalid');
-                                    $('#valid-email').removeClass('valid-feedback').addClass('invalid-feedback');
-                                    $('#valid-email').html(data.responseJSON.errors.email);
-                                }
-                                if (data.responseJSON.errors.kabupaten) {
-                                    $('#kabupaten').removeClass('is-valid').addClass('is-invalid');
-                                    $('#valid-kabupaten').removeClass('valid-feedback').addClass('invalid-feedback');
-                                    $('#valid-kabupaten').html(data.responseJSON.errors.kabupaten);
-                                }
-                                if (data.responseJSON.errors.password) {
-                                    $('#password').removeClass('is-valid').addClass('is-invalid');
-                                    $('#valid-password').removeClass('valid-feedback').addClass('invalid-feedback');
-                                    $('#valid-password').html(data.responseJSON.errors.password);
-                                }
-
-                                $('#btn-save').html('<i class="fas fa-check"></i> Update');
-                                $('#btn-save').removeAttr('disabled');
-                            }
-                        } catch {
-                            if (state == "save") {
-                                swal({
-                                    title: "Maaf!",
-                                    text: "Terjadi kesalahan, Silahkan coba lagi",
-                                    icon: "error",
-                                    timer: 3000
-                                });
-                            } else {
-                                swal({
-                                    title: "Maaf!",
-                                    text: "Terjadi kesalahan, Silahkan coba lagi",
-                                    icon: "error",
-                                    timer: 3000
-                                });
-                            }
-
-                            $('#formModal').modal('hide');
-                        }
-                    }
-                });
-            });
-
-            // Edit Category
-            $('body').on('click', '#btn-edit', function() {
-                var id = $(this).val();
-                $.get('{{ route('admin.user.index') }}' + '/' + id + '/edit', function(data) {
-                    $('#company-form').find('.form-control').removeClass('is-invalid is-valid');
-                    $('#nip').val(data.nip);
-                    $('#id').val(data.id);
-                    $('#name').val(data.name);
-                    $('#email').val(data.email);
-                    $('#password').val(data.password);
-
-                    $('#btn-save').val('update').removeAttr('disabled');
-                    $('#formModal').modal('show');
-                    $('.modal-title').html('Edit Data');
-                    $('#null').html('<small id="null">Kosongkan jika tidak ingin di ubah</small>');
-                    $('#btn-save').html('<i class="fas fa-check"></i> Edit');
-                }).fail(function() {
-                    swal({
-                        title: "Maaf!",
-                        text: "Gagal mengambil Data",
-                        icon: "error",
-                        timer: 3000
-                    });
-                });
-            });
-
-            // Delete company
-            $('body').on('click', '#btn-delete', function(){
-                var id = $(this).val();
-                swal("Peringatan!", "Apakah anda yakin?", "warning", {
-                    buttons: {
-                        cancel: "Tidak!",
-                        ok: {
-                            text: "Ya!",
-                            value: "ok"
-                        }
-                    },
-                }).then((value) => {
-                    switch (value) {
-                        case "ok" :
-                            $.ajax({
-                                type: "DELETE",
-                                url: '{{ route('admin.user.store') }}' + '/' + id,
-                                success: function(data) {
-                                    $('#user-table').DataTable().draw(false);
-                                    $('#user-table').DataTable().on('draw', function() {
-                                        $('[data-toggle="tooltip"]').tooltip();
-                                    });
-
-                                    swal({
-                                        title: "Berhasil!",
-                                        text: "Data berhasil dihapus",
-                                        icon: "success",
-                                        timer: 3000
-                                    });
-                                },
-                                error: function(data) {
-                                    swal({
-                                        title: "Maaf!",
-                                        text: "Terjadi kesalahan, Silahkan coba lagi",
-                                        icon: "error",
-                                        timer: 3000
-                                    });
-                                }
-                            });
-                        break;
-
-                        default :
-                            swal({
-                                title: "Oh Ya!",
-                                text: "Data aman, jangan khawatir",
-                                icon: "info",
-                                timer: 3000
-                            });
-                        break;
-                    }
-                });
-            });
-        });
-    </script>
 @endsection

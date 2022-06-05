@@ -19,11 +19,11 @@ Auth::routes();
 
 Route::get('/auth', 'Auth\LoginController@adminLogin')->name('adminLogin');
 
-Route::get('/', 'AbsenController@index')->name('home');
-Route::get('/attendance/in', 'AbsenController@in')->name('scan.masuk');
-Route::get('/attendance/out', 'AbsenController@out')->name('scan.pulang');
-Route::get('/attendance/in/{id}', 'AbsenController@checkin')->name('in');
-Route::get('/attendance/out/{id}', 'AbsenController@checkout')->name('out');
+Route::get('/login', 'Auth\LoginController@adminLogin')->name('login');
+
+Route::get('/', function () {
+    return redirect('/auth');
+});
 
 // Route::resource('absen', 'AbsenController');
 
@@ -35,15 +35,12 @@ Route::name('admin.')->prefix('admin')->middleware(['auth', 'admin', 'active', '
     Route::get('card', 'AdminController@card')->name('card');
 
     // Data Karyawan
-    Route::resource('user', 'UserController');
+    Route::resource('customer', 'UserController');
     Route::get('change-password', 'UserController@changePassword')->name('changePassword');
     Route::post('update-password', 'UserController@updatePassword')->name('updatePassword');
 
-    Route::resource('attedance', 'AttendanceController');
-    Route::get('attedance_filter', 'AttendanceController@filter')->name('attedance.filter');
-    Route::post('attedance_download', 'AttendanceController@download')->name('attedance.download');
-
-    Route::resource('rekap', 'RekapController');
+    Route::resource('tracking-bpkb', 'AttendanceController');
+    Route::resource('tracking-stnk', 'RekapController');
 
     Route::resource('permission', 'PermissionController');
 });

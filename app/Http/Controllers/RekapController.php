@@ -22,7 +22,7 @@ class RekapController extends Controller
                 ->addIndexColumn()
                 ->make(true);
         }
-        return view('admin.rekap.index');
+        return view('admin.tracking-stnk.index');
     }
 
     /**

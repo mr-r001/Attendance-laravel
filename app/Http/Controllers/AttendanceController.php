@@ -22,7 +22,7 @@ class AttendanceController extends Controller
                 ->addIndexColumn()
                 ->make(true);
         }
-        return view('admin.attendance.index');
+        return view('admin.tracking-bpkb.index');
     }
 
     /**
@@ -102,19 +102,5 @@ class AttendanceController extends Controller
     public function destroy($id)
     {
         //
-    }
-
-    public function filter()
-    {
-        return view('admin.attendance.filter');
-    }
-
-    public function download()
-    {
-        $bulan  = request()->post('bulan');
-        $data = Attendance::with('user')->orderBy('created_at', 'ASC')
-            ->whereMonth('date', '=', $bulan)
-            ->get();
-        return view('admin.attendance.download', compact('bulan', 'data'));
     }
 }

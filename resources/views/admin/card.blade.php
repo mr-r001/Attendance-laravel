@@ -16,7 +16,7 @@
           <div class="breadcrumb-item">
               <a href="{{ route('admin.dashboard') }}">
                   <i class="fa fa-home"></i>
-                  ID Card
+                  Dashboard
               </a>
           </div>
       </div>
@@ -24,15 +24,28 @@
 
       <div class="section-body">
         <div class="row">
-          <div class="col-lg-4 col-md-4">
+          <div class="col-12">
             <div class="card card-primary">
               <div class="card-header">
-                <h4>ID Card</h4>
+                <h4>Status Tracking BPKB dan STNK</h4>
               </div>
-              <div class="card-body text-center">
-                {!! QrCode::size(150)->generate($user[0]->nip) !!}
-                <br><br>  
-                <h4>{{ $user[0]->name }}</h4>
+              <div class="card-body">
+                <div class="alert alert-primary alert-has-icon">
+                  <div class="alert-icon"><i class="far fa-lightbulb"></i></div>
+                  <div class="alert-body">
+                    <div class="alert-title">BPKB</div>
+                    Saat ini data anda baru saja diterima oleh kami.
+                  </div>
+                </div>
+                <div class="alert alert-success alert-has-icon">
+                  <div class="alert-icon"><i class="far fa-lightbulb"></i></div>
+                  <div class="alert-body">
+                    <div class="alert-title">STNK</div>
+                    Saat ini STNK anda sedang kami proses.
+                    <br>
+                    Estimasi selesai 20 April 2022
+                  </div>
+                </div>
               </div>
             </div>
           </div>
